@@ -1,0 +1,64 @@
+#V2
+create \n;
+select
+cc
+CREATE TABLE artists (\n    id INTEGER PRIMARY KEY,\n    first_name TEXT NOT NULL,\n    last_name TEXT NOT NULl,\n    email TEXT NOT NULL UNIQUE\n);
+CREATE TABLE contacts (\n    id INTEGER PRIMARY KEY,\n    first_name TEXT NOT NULL,\n    last_name TEXT NOT NULl,\n    email TEXT NOT NULL UNIQUE,\n    email TEXT\n);
+CREATE TABLE sqlrite_schema(\n  type text,\n  name text,\n  tbl_name text,\n  rootpage integer,\n  sql text\n);\n
+select * from sqlrite_schema;
+CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
+INSERT INTO players (name, email)
+INSERT INTO players (name, email)  VALUES ("Shane", "dj.shane@gmail.com");
+CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
+CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
+select * from users;
+CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
+INSERT INTO users (name, email) VALUES ("Josh", "joaoh82@gmail.com");
+select * from users;
+SELECT * FROM users;
+delete from users where id =1
+SELECT * FROM users;
+CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
+INSERT INTO users (name, email) VALUES ("Josh", "joaoh82@gmail.com");
+select * from users;
+CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
+INSERT INTO users (name, email) VALUES ("Josh", "joaoh82@gmail.com");
+select * from users;
+CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
+INSERT INTO users (name, email) VALUES ("Josh", "joaoh82@gmail.com");
+select * from users;
+INSERT INTO users (name, email) VALUES ("Josh", "joaoh82@gmail.com");
+CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
+INSERT INTO users (name, email) VALUES ("Josh", "joaoh82@gmail.com");
+INSERT INTO users (name, email) VALUES ("Josh11", "joaoh82@gmail.com");
+INSERT INTO users (name, email) VALUES ("Josh1122", "joaoh82@gmail.com");
+CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
+INSERT INTO users (name, email) VALUES ("Josh1122", "joaoh82@gmail.com");
+INSERT INTO users (name, email) VALUES ("Josh112211", "joaoh82@gmail.com");
+INSERT INTO users (name, email) VALUES ("Josh11221111", "joaoh82@gmail.com");
+CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
+INSERT INTO users (name, email) VALUES ("Josh11221111", "joaoh82@gmail.com");
+CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
+INSERT INTO users (name, email) VALUES ("Josh11221111", "joaoh82@gmail.com");
+CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
+INSERT INTO users (name, email) VALUES ("Josh11221111", "joaoh82@gmail.com");
+CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
+INSERT INTO users (name, email) VALUES ("Josh11221111", "joaoh82@gmail.com");
+select
+select * from users;
+help
+.help
+select * from users;
+CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
+select * from users;
+INSERT INTO users (name, email) VALUES ("Josh11221111", "joaoh82@gmail.com");
+select * from users;
+CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
+INSERT INTO users (name, email) VALUES ("Josh11221111", "joaoh82@gmail.com");
+select * from users;
+CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
+INSERT INTO users (name, email) VALUES ("Josh11221111", "joaoh82@gmail.com");
+select * from users;
+CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
+INSERT INTO users (name, email) VALUES ("Josh11221111", "joaoh82@gmail.com");
+INSERT INTO users (name, email) VALUES ("Josh11221111111", "joaoh82@gmail.com");
