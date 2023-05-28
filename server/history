@@ -1,5 +1,4 @@
 #V2
-CREATE TABLE sqlrite_schema(\n  type text,\n  name text,\n  tbl_name text,\n  rootpage integer,\n  sql text\n);\n
 select * from sqlrite_schema;
 CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
 INSERT INTO players (name, email)
@@ -99,3 +98,4 @@ INSERT INTO users (name, email) VALUES ("Josh1", "1joaoh82@gmail.com");
 INSERT INTO users (name, email) VALUES ("Josh1222", "1joaoh8222222@gmail.com");
 INSERT INTO users (name, email) VALUES ("Josh12221111", "1joaoh8222222@gmail.com111");
 SELECT name FROM users;
+CREATE DATABASE user;

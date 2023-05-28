@@ -662,6 +662,7 @@ dependencies = [
  "env_logger",
  "log",
  "prettytable-rs",
+ "regex",
  "rustyline",
  "serde",
  "sqlparser",

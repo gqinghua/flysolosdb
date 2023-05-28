@@ -53,7 +53,7 @@ fn main() -> rustyline::Result<()> {
     repl.bind_sequence(KeyEvent::alt('n'), Cmd::HistorySearchForward);
     repl.bind_sequence(KeyEvent::alt('p'), Cmd::HistorySearchBackward);
 
-    //此方法将历史文件加载到内存中
+    // 此方法将历史文件加载到内存中
     // 如果它不存在，则创建一个
     // 待办事项:检查历史文件大小，如果太大，清理它。
     if repl.load_history("history").is_err() {
@@ -71,7 +71,7 @@ fn main() -> rustyline::Result<()> {
         "Use '.open FILENAME' to reopen on a persistent database."
     );
 
-    let mut db = Database::new("tempdb".to_string());
+    let mut db = Database::new(&"tempdb".to_string());
 
     loop {
         let p = format!("sqlrite> ");

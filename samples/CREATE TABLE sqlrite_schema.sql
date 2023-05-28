@@ -5,3 +5,7 @@ CREATE TABLE sqlrite_schema(
   rootpage integer,
   sql text
 );
+
+
+CREATE DATABASE user;
+USE DATABASE user;

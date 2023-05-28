@@ -4,12 +4,27 @@ select
 cc
 CREATE TABLE artists (\n    id INTEGER PRIMARY KEY,\n    first_name TEXT NOT NULL,\n    last_name TEXT NOT NULl,\n    email TEXT NOT NULL UNIQUE\n);
 CREATE TABLE contacts (\n    id INTEGER PRIMARY KEY,\n    first_name TEXT NOT NULL,\n    last_name TEXT NOT NULl,\n    email TEXT NOT NULL UNIQUE,\n    email TEXT\n);
-CREATE TABLE sqlrite_schema(\n  type text,\n  name text,\n  tbl_name text,\n  rootpage integer,\n  sql text\n);\n
+CREATE TABLE sqlrite_schema(
+\n  type text,
+\n  name text,
+\n  tbl_name text,
+\n  rootpage integer,
+\n  sql text
+\n);
+\n
 select * from sqlrite_schema;
-CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
+CREATE TABLE users (
+\n    id INTEGER PRIMARY KEY,
+\n    name TEXT UNIQUE,
+\n    email TEXT,
+\n);
 INSERT INTO players (name, email)
 INSERT INTO players (name, email)  VALUES ("Shane", "dj.shane@gmail.com");
-CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
+CREATE TABLE users (
+\n    id INTEGER PRIMARY KEY,
+\n    name TEXT UNIQUE,
+\n    email TEXT,
+\n);
 CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
 select * from users;
 CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);

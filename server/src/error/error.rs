@@ -6,9 +6,9 @@ use sqlparser::parser::ParserError;
 
 /// This is a type that encapsulated the `std::result` with the enum `SQLRiteError`
 /// and makes function signatures easier to read.
-pub type Result<T> = result::Result<T, SQLRiteError>;
 
 /// SQLRiteError is an enum with all the standardized errors available for returning
+pub type Result<T> = result::Result<T, SQLRiteError>;
 ///
 #[derive(Error, Debug, PartialEq)]
 pub enum SQLRiteError {
