@@ -2,16 +2,11 @@ use crate::meta_command::*;
 use crate::sql::*;
 
 use std::borrow::Cow::{self, Borrowed, Owned};
-// use rustyline::config::OutputStreamType;
 use rustyline::completion::FilenameCompleter;
-use rustyline::error::ReadlineError;
 use rustyline::highlight::{Highlighter, MatchingBracketHighlighter};
 use rustyline::hint::HistoryHinter;
 use rustyline::validate::MatchingBracketValidator;
-use rustyline::validate::ValidationContext;
-use rustyline::validate::ValidationResult;
-use rustyline::validate::Validator;
-use rustyline::Context;
+
 use rustyline::{Cmd, CompletionType, Config, EditMode, Editor, KeyEvent};
 use rustyline::{Completer, Helper, Hinter, Validator};
 
@@ -32,15 +27,6 @@ pub fn get_command_type(command: &String) -> CommandType {
     }
 }
 
-//具有所有功能的REPL Helper Struct
-// #[derive(Helper, Completer, Hinter, Validator)]
-// pub struct REPLHelper {
-//     // pub validator: MatchingBracketValidator,
-//     pub colored_prompt: String,
-//     pub hinter: HistoryHinter,
-//     pub highlighter: MatchingBracketHighlighter,
-
-// }
 
 #[derive(Helper, Completer, Hinter, Validator)]
 pub struct MyHelper {
@@ -59,12 +45,6 @@ pub struct MyHelper {
 // 返回具有基本编辑器配置的Config::构建器
 //终端配置文件
 pub fn get_config() -> Config {
-    // Config::builder()
-    //     .history_ignore_space(true)
-    //     .completion_type(CompletionType::List)
-    //     .edit_mode(EditMode::Emacs)
-    //     // .output_stream(OutputStreamType::Stdout)
-    //     .build()
     Config::builder()
         .history_ignore_space(true)
         .completion_type(CompletionType::List)

@@ -10,12 +10,9 @@ mod sql;
 
 use meta_command::handle_meta_command;
 use repl::{get_command_type, get_config, CommandType};
-// use repl::{REPLHelper};
 
 use sql::db::database::Database;
 use sql::process_command;
-// use tracing::{span, Level};
-// use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt};
 use clap::{crate_authors, crate_description, crate_name, crate_version, Command};
 use rustyline::error::ReadlineError;
 use rustyline::{Cmd, Editor};
@@ -45,7 +42,6 @@ fn main() -> rustyline::Result<()> {
         validator: MatchingBracketValidator::new(),
     };
 
-    // let mut repl = Editor::with_config(config)?;
     let mut repl = Editor::with_config(config)?;
 
     repl.set_helper(Some(myh));
@@ -75,8 +71,6 @@ fn main() -> rustyline::Result<()> {
 
     loop {
         let p = format!("sqlrite> ");
-        // repl.helper_mut().expect("No helper found").colored_prompt =
-        //     format!("\x1b[1;32m{}\x1b[0m", p);
         repl.helper_mut().expect("No helper").colored_prompt = format!("\x1b[1;32m{p}\x1b[0m");
             
         let readline = repl.readline(&p);
@@ -93,10 +87,8 @@ fn main() -> rustyline::Result<()> {
                             Err(err) => eprintln!("An error occured: {}", err),
                         };
                     }
-                    
                     CommandType::MetaCommand(cmd) => {
                         // handle_meta_command解析并执行metcommand
-                        //返回一个Result<String, SQLRiteError>
                         let _ = match handle_meta_command(cmd, &mut repl) {
                             Ok(response) => println!("{}", response),
                             Err(err) => eprintln!("An error occured: {}", err),

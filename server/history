@@ -1,24 +1,4 @@
 #V2
-select * from sqlrite_schema;
-CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
-INSERT INTO players (name, email)
-INSERT INTO players (name, email)  VALUES ("Shane", "dj.shane@gmail.com");
-CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
-CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
-select * from users;
-CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
-INSERT INTO users (name, email) VALUES ("Josh", "joaoh82@gmail.com");
-select * from users;
-SELECT * FROM users;
-delete from users where id =1
-SELECT * FROM users;
-CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
-INSERT INTO users (name, email) VALUES ("Josh", "joaoh82@gmail.com");
-select * from users;
-CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
-INSERT INTO users (name, email) VALUES ("Josh", "joaoh82@gmail.com");
-select * from users;
-CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
 INSERT INTO users (name, email) VALUES ("Josh", "joaoh82@gmail.com");
 select * from users;
 INSERT INTO users (name, email) VALUES ("Josh", "joaoh82@gmail.com");
@@ -99,3 +79,23 @@ INSERT INTO users (name, email) VALUES ("Josh1222", "1joaoh8222222@gmail.com");
 INSERT INTO users (name, email) VALUES ("Josh12221111", "1joaoh8222222@gmail.com111");
 SELECT name FROM users;
 CREATE DATABASE user;
+CREATE TABLE users (id TEXT,name TEXT,email TEXT,);
+INSERT INTO users (name, email) VALUES ("Josh", "joaoh82@gmail.com");
+select * from users;
+user database
+user database;
+CREATE TABLE users (id TEXT,name TEXT,email TEXT,);
+user database;
+use database;
+CREATE TABLE users (id TEXT,name TEXT,email TEXT,);
+use database;
+CREATE TABLE users (id TEXT,name TEXT,email TEXT,);
+use users;
+CREATE TABLE users (id TEXT,name TEXT,email TEXT,);
+use users;
+CREATE TABLE users (id TEXT,name TEXT,email TEXT,);
+use users;
+CREATE TABLE users (id TEXT,name TEXT,email TEXT,);
+use users;
+CREATE TABLE users (id TEXT,name TEXT,email TEXT,);
+use users;

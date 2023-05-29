@@ -22,6 +22,8 @@ pub enum SQLCommand {
     Update(String),
     CreateTable(String),
     Select(String),
+    USE(String),
+    DROP(String),
     Unknown(String),
 }
 // 枚举值实现。new 创建一个对象
@@ -161,7 +163,6 @@ pub fn process_command(query: &str, db: &mut Database) -> Result<String> {
             message = String::from("INSERT Statement executed.")
         }
         //打印查询sql语句
-        //println!("sql语句 {:?}",query);
         Statement::Query( .. ) => {
             let select_query= SelectQuery::new(&query);
             match select_query {
@@ -200,24 +201,16 @@ pub fn process_command(query: &str, db: &mut Database) -> Result<String> {
                 },
                 Err(error) => eprintln!("{error}"),
             }
-
-
-
-            // match select_query {
-            //     // Ok(payload) => {
-            //     //     let table_name = query.table_name;
-            //     //     let columns = query.columns;
-            //     //     let values = query.rows;
-            //     //     let db_table = db.get_table_mut(table_name.to_string()).unwrap();
-
-                // }
-
-            // }
               //QUERY已执行的语句。
             message = String::from("QUERY Statement executed.")
         }
         //Statement::Query(_query) => message = String::from("SELECT Statement executed."),
-        // Statement::Insert { .. } => message = String::from("INSERT Statement executed."),
+        Statement::Use { .. } =>{
+            let use_query= Database::use_db(&query);
+
+
+            message = String::from("INSERT111 Statement executed.")
+        } 
         Statement::Delete { .. } => message = String::from("DELETE Statement executed."),
         _ => {
             return Err(SQLRiteError::NotImplemented(
