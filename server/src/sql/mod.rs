@@ -1,5 +1,6 @@
 pub mod db;
 pub mod parser;
+pub mod regrxs;
 
 use crate::error::error::{Result, SQLRiteError};
 use crate::sql::db::database::Database;
@@ -7,8 +8,8 @@ use crate::sql::db::table::Table;
 
 use parser::create::CreateQuery;
 use parser::insert::InsertQuery;
-use parser::query::SelectQuery;
 use parser::query::Select;
+use parser::query::SelectQuery;
 use prettytable::{Cell as PrintCell, Row as PrintRow, Table as PrintTable};
 use sqlparser::ast::Statement;
 use sqlparser::dialect::SQLiteDialect;
@@ -116,7 +117,8 @@ pub fn process_command(query: &str, db: &mut Database) -> Result<String> {
                             // Checking if columns on INSERT query exist on Table
                             match columns
                                 .iter()
-                                .all(|column| db_table.contains_column(column.to_string())){
+                                .all(|column| db_table.contains_column(column.to_string()))
+                            {
                                 true => {
                                     println!("判断查询表名称1");
                                     for value in &values {
@@ -163,12 +165,12 @@ pub fn process_command(query: &str, db: &mut Database) -> Result<String> {
             message = String::from("INSERT Statement executed.")
         }
         //打印查询sql语句
-        Statement::Query( .. ) => {
-            let select_query= SelectQuery::new(&query);
+        Statement::Query(..) => {
+            let select_query = SelectQuery::new(&query);
             match select_query {
                 Ok(mut sq) => match db.contains_table(sq.from.to_string()) {
                     true => {
-                        let db_table = db.get_table(sq.from.to_string()).unwrap();;
+                        let db_table = db.get_table(sq.from.to_string()).unwrap();
 
                         let cloned_projection = sq.projection.clone();
 
@@ -189,7 +191,6 @@ pub fn process_command(query: &str, db: &mut Database) -> Result<String> {
                                     "Cannot execute query, cannot find column {} in table {}",
                                     col, db_table.tb_name
                                 );
-                                
                             }
                         }
                         println!("sq = {:?}", &sq);
@@ -201,16 +202,20 @@ pub fn process_command(query: &str, db: &mut Database) -> Result<String> {
                 },
                 Err(error) => eprintln!("{error}"),
             }
-              //QUERY已执行的语句。
+            //QUERY已执行的语句。
             message = String::from("QUERY Statement executed.")
         }
         //Statement::Query(_query) => message = String::from("SELECT Statement executed."),
-        Statement::Use { .. } =>{
-            let use_query= Database::use_db(&query);
-
-
+        Statement::Use { .. } => {
+            let use_query = Database::use_db(&query);
             message = String::from("INSERT111 Statement executed.")
-        } 
+        }
+        Statement::CreateDatabase { .. } => {
+            let use_query = Database::new("aaa");
+            message = String::from("INSERT111 Statement executed.")
+
+        }
+
         Statement::Delete { .. } => message = String::from("DELETE Statement executed."),
         _ => {
             return Err(SQLRiteError::NotImplemented(

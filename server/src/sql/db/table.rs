@@ -11,6 +11,7 @@ use crate::error::error::{Result, SQLRiteError};
 use crate::sql::parser::{create::CreateQuery};
 use crate::sql::parser::query::{SelectQuery,Operator,Binary,Expression};
 use std::result::Result as R;
+use thiserror::Error;
 //表信息
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct Table {
@@ -27,6 +28,7 @@ pub struct Table {
     ///列的名称，如果表没有PRIMARY KEY，则为-1
     pub primary_key: String,
 }
+
 
 impl Table {
     pub fn new(create_query: CreateQuery) -> Self {

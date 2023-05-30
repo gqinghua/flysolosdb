@@ -34,7 +34,7 @@ impl Database {
         let db_dir = base_dir.join(db_name);
         print!("数据库名称{}", db_name);
         if db_dir.exists() {
-            print!("错误")
+            print!("错误11")
         }
         fs::create_dir_all(db_dir).unwrap();
         Database {
