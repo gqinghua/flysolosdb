@@ -1,2 +1,2 @@
-pub mod DatabaseError;
-pub mod TableError;
+pub mod DataError;
+pub mod Table;

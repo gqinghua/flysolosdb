@@ -5,7 +5,7 @@ use std::{
 };
 use tabwriter::TabWriter;
 
-use crate::{error::database::TableError::TableEntries};
+use crate::error::database::Table::TableEntries;
 use crate::sql::db::database::DB_DIR;
 use crate::sql::parser::QueryParser::SelectCols;
 use crate::sql::regrxs::regexs::RE_COMMA_SEPARATED_VALUES;

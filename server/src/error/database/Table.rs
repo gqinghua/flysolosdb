@@ -17,12 +17,12 @@ pub struct Table<'a> {
 #[derive(Debug, Error)]
 pub enum TableError {
     #[error("DB Error")]
-    DBErr(#[from] super::DatabaseError::DatabaseError),
+    DBErr(#[from] super::DataError::DatabaseError),
     #[error("IO Error")]
     IoErr(#[from] io::Error),
     #[error("Invalid JSON")]
-    // SerializationErr(#[from]),
-    // #[error("Table not found")]
+    SerializationErr(),
+    #[error("Table not found")]
     TableNotFond(String),
     #[error("Column not found")]
     ColNotFound(String),
@@ -34,6 +34,7 @@ pub enum TableError {
     TypeErr(#[from] DataTypesErr),
     #[error("Column already exist")]
     ColAlreadyExist(String),
+    
 }
 
-type TableResult<T> = Result<T, TableError>;
+pub  type TableResult<T> = Result<T, TableError>;

@@ -13,11 +13,9 @@ use repl::{get_command_type, get_config, CommandType};
 
 use sql::db::database::Database;
 use sql::process_command;
-use clap::{crate_authors, crate_description, crate_name, crate_version, Command};
+use clap::{ crate_name, crate_version, Command};
 use rustyline::error::ReadlineError;
 use rustyline::{Cmd, Editor};
-use rustyline::{DefaultEditor, Result};
-
 // 测试
 use crate::repl::MyHelper;
 use rustyline::completion::FilenameCompleter;

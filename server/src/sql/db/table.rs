@@ -1,17 +1,23 @@
 use serde::{Deserialize, Serialize};
+use sqlparser::ast::Query;
 use std::cell::RefCell;
 use std::collections::{BTreeMap, HashMap};
-use std::fmt;
+use std::{fmt, fs};
 use std::rc::Rc;
 use std::ops::Bound::{self, Excluded, Included, Unbounded};
 
 use prettytable::{Cell as PrintCell, Row as PrintRow, Table as PrintTable};
 
+use crate::error::database::Table::{TableEntries, TableResult, TableError};
 use crate::error::error::{Result, SQLRiteError};
 use crate::sql::parser::{create::CreateQuery};
 use crate::sql::parser::query::{SelectQuery,Operator,Binary,Expression};
+use crate::sql::regrxs::utils::{get_table_path, get_schema_path};
 use std::result::Result as R;
 use thiserror::Error;
+use serde_json::json;
+
+use super::database::Database;
 //表信息
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct Table {
@@ -27,10 +33,40 @@ pub struct Table {
     pub last_rowid: i64,
     ///列的名称，如果表没有PRIMARY KEY，则为-1
     pub primary_key: String,
+    
+    pub db:  String,
+
 }
 
 
+
 impl Table {
+
+    fn write(&self, entries: &TableEntries) -> TableResult<()> {
+        self.exists_or_err()?;
+        let table = get_table_path(self);
+        let entries = json!(entries);
+        fs::write(table, entries.to_string())?;
+        Ok(())
+    }
+    fn exist(&self) -> bool {
+        let schema = get_schema_path(self);
+        let table = get_table_path(self);
+        schema.exists() && table.exists()
+    }
+    fn exists_or_err(&self) -> TableResult<()> {
+        Database::exists_or_err(&self.db).unwrap();
+
+        if !self.exist() {
+            Err(TableError::TableNotFond(self.db.to_string()))
+
+        } else {
+            Ok(())
+        }
+    }
+    
+
+
     pub fn new(create_query: CreateQuery) -> Self {
         let table_name = create_query.table_name;
         let mut primary_key: String = String::from("-1");
@@ -86,6 +122,7 @@ impl Table {
             indexes: HashMap::new(),
             last_rowid: 0,
             primary_key: primary_key,
+            db: todo!(),
         }
     }
 
@@ -123,9 +160,8 @@ impl Table {
         Err(SQLRiteError::General(String::from("Column not found.")))
     }
 
-    /// Validates if columns and values being inserted violate the UNIQUE constraint
-    /// As a reminder the PRIMARY KEY column automatically also is a UNIQUE column.
-    ///
+        ///验证插入的列和值是否违反UNIQUE约束
+        ///提醒一下，PRIMARY KEY列自动也是UNIQUE列
     pub fn validate_unique_constraint(
         &mut self,
         cols: &Vec<String>,
@@ -266,15 +302,15 @@ impl Table {
                 }
             }
 
-            // Getting the rows from the column name
+            //从列名中获取行
             let rows_clone = Rc::clone(&self.rows);
             let mut row_data = rows_clone.as_ref().borrow_mut();
             let mut table_col_data = row_data.get_mut(key).unwrap();
 
-            // Getting the header based on the column name
+           //根据列名获取标题
             let column_headers = self.get_column_mut(key.to_string()).unwrap();
 
-            // Getting index for column, if it exist
+           //获取列的索引，如果列存在
             let col_index = column_headers.get_mut_index();
 
             match &mut table_col_data {
@@ -284,6 +320,7 @@ impl Table {
                     if let ColumnIndex::Integer(index) = col_index {
                         index.insert(val, next_rowid.clone());
                     }
+
                 }
                 Row::Text(tree) => {
                     tree.insert(next_rowid.clone(), val.to_string());
@@ -456,42 +493,6 @@ impl Table {
     }
 
   
-  
-    //查询
-    // pub fn execute_select_query(&self, sq: &SelectQuery) {
-    //     let mut data: Vec<Vec<String>> = vec![];
-
-    //     let expr = sq.where_expressions.first();
-    //     match expr {
-    //         Some(where_expr) => {
-    //             let col = self.get_column(where_expr.left.to_string()).unwrap();
-
-    //             if col.is_indexed {
-    //                 println!("Executing select expression with index");
-                
-    //             } else {
-    //                 println!("Executing select expression without index");
-    //                 data = self.execute_select_query_without_index(sq);
-    //             }
-    //         }
-    //         None => {
-    //             println!("In none block");
-    //             for col in &sq.projection {
-    //                 let row = self.rows.get(col).unwrap();
-    //                 let column = row.get_serialized_col_data();
-    //                 data.push(column);
-    //             }
-    //         }
-    //     }
-
-    //     let rotated_data = Self::rotate_2d_vec(&data);
-    //     Self::pretty_print(&rotated_data, &sq.projection);
-    // }
-
-   
-    
- 
-
 }
 
 //字段信息
@@ -561,17 +562,6 @@ pub enum ColumnIndex {
 }
 
 impl ColumnIndex {
-    // fn get_idx_data(&self, val: &String)  -> R<Option<usize>,String>{
-    //     match self {
-    //         ColumnIndex::Integer(index) => match val.parse::<i32>() {
-    //             Ok(val) => Ok(index.get(&val)),
-    //             Err(e) => Err(e.to_string()),
-    //         },
-          
-    //         ColumnIndex::Text(index) => Ok(index.get(val)),
-    //         ColumnIndex::None => Ok(None),
-    //     };
-    // }
 
     fn get_indexes_from_op<T: Clone>(val: T, op: Binary) -> (Bound<T>, Bound<T>) {
         match op {
@@ -596,16 +586,6 @@ impl ColumnIndex {
                 }
                 Err(e) => Err(e.to_string()),
             },
-
-            // ColumnIndex::Bool(index) => match val.parse::<bool>() {
-            //     Ok(val) => {
-            //         for (_, idx) in index.range(Self::get_indexes_from_op::<bool>(val, op)) {
-            //             indexes.push(*idx);
-            //         }
-            //         Ok(indexes)
-            //     }
-            //     Err(e) => Err(e.to_string()),
-            // },
             ColumnIndex::Text(index) => {
                 for (_, idx) in
                     index.range(Self::get_indexes_from_op::<String>(val.to_string(), op))
@@ -695,150 +675,4 @@ impl Row {
     }
 }
 
-    
 
-    // fn get_serialized_col_data_by_index(&self, indices: &[usize]) -> Vec<String> {
-    //     let mut selected_data = vec![];
-    //     match self {
-    //         Row::Integer(cd) => {
-    //             indices
-    //                 .iter()
-    //                 .for_each(|i| selected_data.push((cd[*i]).to_string()));
-    //         }
-    //         Row::Real(cd) => {
-    //             indices
-    //                 .iter()
-    //                 .for_each(|i| selected_data.push((cd[*i]).to_string()));
-    //         }
-    //         Row::Text(cd) => {
-    //             indices
-    //                 .iter()
-    //                 .for_each(|i| selected_data.push((cd[*i]).to_string()));
-    //         }
-    //         Row::Bool(cd) => {
-    //             indices
-    //                 .iter()
-    //                 .for_each(|i| selected_data.push((cd[*i]).to_string()));
-    //         }
-    //         Row::None => panic!("Found None in columns"),
-    //     }
-    //     selected_data
-    // }
-
-//     fn work<A, B, C, D>(
-//         &self,
-//         search_term: &str,
-//         scanned_vals: &mut Vec<usize>,
-//         func1: A,
-//         func2: B,
-//         func3: C,
-//         func4: D,
-//     ) -> Vec<usize>
-//     where
-//         A: Fn(i32, i32) -> bool,
-//         B: Fn(f32, f32) -> bool,
-//         C: Fn(&String, &String) -> bool,
-//         D: Fn(bool, bool) -> bool,
-//     {
-//         match self {
-//             Row::Integer(cd) => {
-//                 let search_term = search_term.parse::<i32>().unwrap();
-
-//                 for (idx, i) in cd.iter().enumerate() {
-//                     if func1((*i).to, search_term) {
-//                         scanned_vals.push(idx);
-//                     }
-//                 }
-//                 scanned_vals.to_vec()
-//             }
-//             Row::Real(cd) => {
-//                 let search_term = search_term.parse::<f32>().unwrap();
-
-//                 for (idx, i) in cd.iter().enumerate() {
-//                     if func2(*i, search_term) {
-//                         scanned_vals.push(idx);
-//                     }
-//                 }
-//                 scanned_vals.to_vec()
-//             }
-//             Row::Text(cd) => {
-//                 let search_term = search_term.parse::<String>().unwrap();
-
-//                 for (idx, i) in cd.iter().enumerate() {
-//                     if func3(i, &search_term) {
-//                         scanned_vals.push(idx);
-//                     }
-//                 }
-//                 scanned_vals.to_vec()
-//             }
-//             Row::Bool(cd) => {
-//                 let search_term = search_term.parse::<bool>().unwrap();
-//                 for (idx, i) in cd.iter().enumerate() {
-//                     if func4(*i, search_term) {
-//                         scanned_vals.push(idx);
-//                     }
-//                 }
-//                 scanned_vals.to_vec()
-//             }
-//             Row::None => panic!("Found None in columns"),
-//         }
-//     }
-
-//     fn get_serialized_col_data_by_scanning(&self, expr: &Expression) -> Vec<usize> {
-//         let search_term = (expr.right).to_string();
-//         let mut scanned_vals = vec![];
-//         match &expr.op {
-//             Operator::Binary(binary_op) => match binary_op {
-//                 Binary::NotEq => Self::work(
-//                     self,
-//                     &search_term,
-//                     &mut scanned_vals,
-//                     |a, b| a != b,
-//                     |a, b| a != b,
-//                     |a, b| a != b,
-//                     |a, b| a != b,
-//                 ),
-//                 Binary::Eq => self.work(
-//                     &search_term,
-//                     &mut scanned_vals,
-//                     |a, b| a == b,
-//                     |a, b| a == b,
-//                     |a, b| a == b,
-//                     |a, b| a == b,
-//                 ),
-//                 Binary::Gt => self.work(
-//                     &search_term,
-//                     &mut scanned_vals,
-//                     |a, b| a > b,
-//                     |a, b| a > b,
-//                     |a, b| a > b,
-//                     |a, b| a & !b,
-//                 ),
-//                 Binary::Lt => self.work(
-//                     &search_term,
-//                     &mut scanned_vals,
-//                     |a, b| a < b,
-//                     |a, b| a < b,
-//                     |a, b| a < b,
-//                     |a, b| !a & b,
-//                 ),
-//                 Binary::LtEq => self.work(
-//                     &search_term,
-//                     &mut scanned_vals,
-//                     |a, b| a <= b,
-//                     |a, b| a <= b,
-//                     |a, b| a <= b,
-//                     |a, b| a <= b,
-//                 ),
-//                 Binary::GtEq => self.work(
-//                     &search_term,
-//                     &mut scanned_vals,
-//                     |a, b| a >= b,
-//                     |a, b| a >= b,
-//                     |a, b| a >= b,
-//                     |a, b| a >= b,
-//                 ),
-//             },
-//         }
-//     }
-// }

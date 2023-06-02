@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::ptr::null;
 
-use crate::error::database::DatabaseError;
+use crate::error::database::DataError;
 use crate::error::error::{Result, SQLRiteError};
 use crate::sql::db::table::Table;
 

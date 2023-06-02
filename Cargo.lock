@@ -890,6 +890,7 @@ dependencies = [
  "regex",
  "rustyline",
  "serde",
+ "serde_json",
  "sqlparser",
  "tabwriter",
  "thiserror",
