@@ -64,7 +64,16 @@ impl Table {
             Ok(())
         }
     }
-    
+
+    fn read(&self) -> R<TableEntries, TableError> {
+        self.exists_or_err()?;
+        let table = get_table_path(self);
+
+        let content = fs::read_to_string(table)?;
+
+        Ok(serde_json::from_str(&content).unwrap())
+    }
+
 
 
     pub fn new(create_query: CreateQuery) -> Self {

@@ -1,6 +1,8 @@
+use std::collections::HashMap;
+
 use sqlparser::ast::{Expr, Query, SetExpr, Statement, Value, Values};
 
-use crate::error::error::{Result, SQLRiteError};
+use crate::{error::error::{Result, SQLRiteError}, sql::db::table::{self, Table}};
 
 /// 下面的结构表示已经解析过的INSERT查询
 /// 并分解为“table_name”和“Vec<String>”表示“列”
@@ -61,6 +63,7 @@ pub fn new(statement: &Statement) -> Result<InsertQuery> {
                     }
                     all_vals.push(value_set);
                 }
+                //持久化操作
             }
         }
 
