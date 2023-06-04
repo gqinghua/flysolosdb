@@ -51,7 +51,7 @@ fn main() -> rustyline::Result<()> {
     // 此方法将历史文件加载到内存中
     // 如果它不存在，则创建一个
     // 待办事项:检查历史文件大小，如果太大，清理它。
-    if repl.load_history("history").is_err() {
+    if repl.load_history(".hisData").is_err() {
         println!("No previous history.");
     }
 
