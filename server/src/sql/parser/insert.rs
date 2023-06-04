@@ -63,6 +63,12 @@ pub fn new(statement: &Statement) -> Result<InsertQuery> {
                     }
                     all_vals.push(value_set);
                 }
+                for i in & all_vals {
+                    for c in i {
+                        println!("数据为 ：{c}");
+
+                    }
+                }
                 //持久化操作
             }
         }

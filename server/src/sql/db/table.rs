@@ -34,7 +34,6 @@ pub struct Table {
     ///列的名称，如果表没有PRIMARY KEY，则为-1
     pub primary_key: String,
     
-    pub db:  String,
 
 }
 
@@ -42,37 +41,37 @@ pub struct Table {
 
 impl Table {
 
-    fn write(&self, entries: &TableEntries) -> TableResult<()> {
-        self.exists_or_err()?;
-        let table = get_table_path(self);
-        let entries = json!(entries);
-        fs::write(table, entries.to_string())?;
-        Ok(())
-    }
-    fn exist(&self) -> bool {
-        let schema = get_schema_path(self);
-        let table = get_table_path(self);
-        schema.exists() && table.exists()
-    }
-    fn exists_or_err(&self) -> TableResult<()> {
-        Database::exists_or_err(&self.db).unwrap();
+    // fn write(&self, entries: &TableEntries) -> TableResult<()> {
+    //     self.exists_or_err()?;
+    //     let table = get_table_path(self);
+    //     let entries = json!(entries);
+    //     fs::write(table, entries.to_string())?;
+    //     Ok(())
+    // }
+    // fn exist(&self) -> bool {
+    //     let schema = get_schema_path(self);
+    //     let table = get_table_path(self);
+    //     schema.exists() && table.exists()
+    // }
+    // fn exists_or_err(&self) -> TableResult<()> {
+    //     Database::exists_or_err(&self.db).unwrap();
 
-        if !self.exist() {
-            Err(TableError::TableNotFond(self.db.to_string()))
+    //     if !self.exist() {
+    //         Err(TableError::TableNotFond(self.db.to_string()))
 
-        } else {
-            Ok(())
-        }
-    }
+    //     } else {
+    //         Ok(())
+    //     }
+    // }
 
-    fn read(&self) -> R<TableEntries, TableError> {
-        self.exists_or_err()?;
-        let table = get_table_path(self);
+    // fn read(&self) -> R<TableEntries, TableError> {
+    //     self.exists_or_err()?;
+    //     let table = get_table_path(self);
 
-        let content = fs::read_to_string(table)?;
+    //     let content = fs::read_to_string(table)?;
 
-        Ok(serde_json::from_str(&content).unwrap())
-    }
+    //     Ok(serde_json::from_str(&content).unwrap())
+    // }
 
 
 
@@ -131,7 +130,6 @@ impl Table {
             indexes: HashMap::new(),
             last_rowid: 0,
             primary_key: primary_key,
-            db: todo!(),
         }
     }
 

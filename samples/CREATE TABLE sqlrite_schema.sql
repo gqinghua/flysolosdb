@@ -8,4 +8,5 @@ CREATE TABLE sqlrite_schema(
 
 
 CREATE DATABASE user;
+CREATE DATABASE tempdb;
 USE DATABASE user;

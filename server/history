@@ -6,8 +6,6 @@ CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    em
 INSERT INTO users (name, email) VALUES ("Josh11221111", "joaoh82@gmail.com");
 CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
 INSERT INTO users (name, email) VALUES ("Josh11221111", "joaoh82@gmail.com");
-CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT UNIQUE,\n    email TEXT,\n);
-INSERT INTO users (name, email) VALUES ("Josh11221111", "joaoh82@gmail.com");
 select
 select * from users;
 help
@@ -99,3 +97,5 @@ CREATE TABLE users (id TEXT,name TEXT,email TEXT,);
 INSERT INTO users (name, email) VALUES ("Josh", "joaoh82@gmail.com");
 select * from users;
 select name from users;
+CREATE TABLE users (id TEXT,name TEXT,email TEXT,);
+INSERT INTO users (name, email) VALUES ("Josh", "joaoh82@gmail.com");
