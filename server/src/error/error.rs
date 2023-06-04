@@ -4,10 +4,10 @@ use std::result;
 
 use sqlparser::parser::ParserError;
 
-/// This is a type that encapsulated the `std::result` with the enum `SQLRiteError`
-/// and makes function signatures easier to read.
+///这个类型封装了' std::result '和' SQLRiteError '枚举
+///使函数签名更容易阅读。
 
-/// SQLRiteError is an enum with all the standardized errors available for returning
+/// SQLRiteError是一个枚举，包含所有可返回的标准化错误
 pub type Result<T> = result::Result<T, SQLRiteError>;
 ///
 #[derive(Error, Debug, PartialEq)]

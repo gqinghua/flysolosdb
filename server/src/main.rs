@@ -7,6 +7,7 @@ mod error;
 mod meta_command;
 mod repl;
 mod sql;
+mod storage;
 
 use meta_command::handle_meta_command;
 use repl::{get_command_type, get_config, CommandType};
