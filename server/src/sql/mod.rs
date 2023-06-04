@@ -1,6 +1,7 @@
 pub mod db;
 pub mod parser;
 pub mod regrxs;
+pub mod engine;
 
 use crate::error::error::{Result, SQLRiteError};
 use crate::sql::db::database::Database;

@@ -8,6 +8,7 @@ use  crate::error::error::Result;
 
 use std::fmt::Display;
 use std::ops::{Bound, RangeBounds};
+pub use mvcc::MVCC;
 
 /////键/值范围上的迭代器。
 pub type Scan = Box<dyn DoubleEndedIterator<Item = Result<(Vec<u8>, Vec<u8>)>> + Send>;
