@@ -1,6 +1,6 @@
 
 pub mod mvcc;
-
+pub mod encoding;
 
 
 
