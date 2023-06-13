@@ -138,6 +138,7 @@ impl Transaction {
     pub fn id(&self) -> u64 {
         self.id
     }
+    
 
     /// Returns the transaction mode.
     pub fn mode(&self) -> Mode {
