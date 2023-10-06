@@ -10,7 +10,7 @@ use sqlparser::parser::ParserError;
 
 /// SQLRiteError是一个枚举，包含所有可返回的标准化错误
 pub type Result<T> = result::Result<T, SQLRiteError>;
-pub type Results<T> = std::result::Result<T, Error>;
+pub type Results<T> = std::result::Result<T, Errors>;
 
 ///
 #[derive(Error, Debug, PartialEq)]
@@ -33,7 +33,7 @@ pub fn sqlrite_error(message: &str) -> SQLRiteError {
 }
 
 
-pub enum Error {
+pub enum Errors {
     Abort,
     Config(String),
     Internal(String),
@@ -45,94 +45,94 @@ pub enum Error {
 
 
 
-impl Display for Error {
+impl Display for Errors {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> fmt::Result {
         match self {
-            Error::Config(s) | Error::Internal(s) | Error::Parse(s) | Error::Value(s) => {
+            Errors::Config(s) | Errors::Internal(s) | Errors::Parse(s) | Errors::Value(s) => {
                 write!(f, "{}", s)
             }
-            Error::Abort => write!(f, "Operation aborted"),
-            Error::Serialization => write!(f, "Serialization failure, retry transaction"),
-            Error::ReadOnly => write!(f, "Read-only transaction"),
+            Errors::Abort => write!(f, "Operation aborted"),
+            Errors::Serialization => write!(f, "Serialization failure, retry transaction"),
+            Errors::ReadOnly => write!(f, "Read-only transaction"),
         }
     }
 }
 
-impl From<Box<bincode::ErrorKind>> for Error {
+impl From<Box<bincode::ErrorKind>> for Errors {
     fn from(err: Box<bincode::ErrorKind>) -> Self {
-        Error::Internal(err.to_string())
+        Errors::Internal(err.to_string())
     }
 }
 
-impl From<config::ConfigError> for Error {
+impl From<config::ConfigError> for Errors {
     fn from(err: config::ConfigError) -> Self {
-        Error::Config(err.to_string())
+        Errors::Config(err.to_string())
     }
 }
 
-impl From<log::ParseLevelError> for Error {
+impl From<log::ParseLevelError> for Errors {
     fn from(err: log::ParseLevelError) -> Self {
-        Error::Config(err.to_string())
+        Errors::Config(err.to_string())
     }
 }
 
-impl From<log::SetLoggerError> for Error {
+impl From<log::SetLoggerError> for Errors {
     fn from(err: log::SetLoggerError) -> Self {
-        Error::Config(err.to_string())
+        Errors::Config(err.to_string())
     }
 }
 
-impl From<regex::Error> for Error {
+impl From<regex::Error> for Errors {
     fn from(err: regex::Error) -> Self {
-        Error::Value(err.to_string())
+        Errors::Value(err.to_string())
     }
 }
 
-impl From<rustyline::error::ReadlineError> for Error {
+impl From<rustyline::error::ReadlineError> for Errors {
     fn from(err: rustyline::error::ReadlineError) -> Self {
-        Error::Internal(err.to_string())
+        Errors::Internal(err.to_string())
     }
 }
 
-impl From<std::array::TryFromSliceError> for Error {
+impl From<std::array::TryFromSliceError> for Errors {
     fn from(err: std::array::TryFromSliceError) -> Self {
-        Error::Internal(err.to_string())
+        Errors::Internal(err.to_string())
     }
 }
 
-impl From<std::io::Error> for Error {
+impl From<std::io::Error> for Errors {
     fn from(err: std::io::Error) -> Self {
-        Error::Internal(err.to_string())
+        Errors::Internal(err.to_string())
     }
 }
 
-impl From<std::net::AddrParseError> for Error {
+impl From<std::net::AddrParseError> for Errors {
     fn from(err: std::net::AddrParseError) -> Self {
-        Error::Internal(err.to_string())
+        Errors::Internal(err.to_string())
     }
 }
 
-impl From<std::num::ParseFloatError> for Error {
+impl From<std::num::ParseFloatError> for Errors {
     fn from(err: std::num::ParseFloatError) -> Self {
-        Error::Parse(err.to_string())
+        Errors::Parse(err.to_string())
     }
 }
 
-impl From<std::num::ParseIntError> for Error {
+impl From<std::num::ParseIntError> for Errors {
     fn from(err: std::num::ParseIntError) -> Self {
-        Error::Parse(err.to_string())
+        Errors::Parse(err.to_string())
     }
 }
 
-impl From<std::string::FromUtf8Error> for Error {
+impl From<std::string::FromUtf8Error> for Errors {
     fn from(err: std::string::FromUtf8Error) -> Self {
-        Error::Internal(err.to_string())
+        Errors::Internal(err.to_string())
     }
 }
 
-impl<T> From<std::sync::PoisonError<T>> for Error {
+impl<T> From<std::sync::PoisonError<T>> for Errors {
     fn from(err: std::sync::PoisonError<T>) -> Self {
-        Error::Internal(err.to_string())
+        Errors::Internal(err.to_string())
     }
 
 }

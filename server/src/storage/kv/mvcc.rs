@@ -6,7 +6,8 @@ use std::sync::{Arc, RwLockReadGuard, RwLockWriteGuard};
 
 
 use super::{encoding, Range, Store};
-use crate::error::error::Result;
+use crate::error::error::{Result, Results};
+use crate::error::error::Errors;
 pub struct MVCC {
     ///底层的KV存储。它受到互斥锁的保护，因此可以在txns之间共享。
     store: Arc<RwLock<Box<dyn Store>>>,
@@ -96,191 +97,30 @@ pub struct Transaction {
 
 
 impl Transaction {
-    /// Begins a new transaction in the given mode.
-    fn begin(store: Arc<RwLock<Box<dyn Store>>>, mode: Mode) -> Result<Self> {
-        let mut session = store.write()?;
+    ///以给定的模式开始一个新的事务。
+    fn begin(store: Arc<RwLock<Box<dyn Store>>>, mode: Mode) -> Results<Self> {
+        let mut session = store.write().unwrap();
 
-        let id = match session.get(&Key::TxnNext.encode())? {
-            Some(ref v) => deserialize(v)?,
+        let id = match session.get(&Key::TxnNext.encode()) .unwrap(){
+            Some(ref v) => deserialize(v).unwrap(),
             None => 1,
         };
-        session.set(&Key::TxnNext.encode(), serialize(&(id + 1))?)?;
-        session.set(&Key::TxnActive(id).encode(), serialize(&mode)?)?;
+        session.set(&Key::TxnNext.encode(), serialize(&(id + 1)).unwrap()).unwrap();
+        session.set(&Key::TxnActive(id).encode(), serialize(&mode).unwrap()).unwrap();
 
         // We always take a new snapshot, even for snapshot transactions, because all transactions
         // increment the transaction ID and we need to properly record currently active transactions
         // for any future snapshot transactions looking at this one.
-        let mut snapshot = Snapshot::take(&mut session, id)?;
+        let mut snapshot = Snapshot::take(&mut session, id);
         std::mem::drop(session);
         if let Mode::Snapshot { version } = &mode {
-            snapshot = Snapshot::restore(&store.read()?, *version)?
+            snapshot = Snapshot::restore(&store.read().unwrap(), *version);
         }
 
         Ok(Self { store, id, mode, snapshot })
     }
 
-    /// Resumes an active transaction with the given ID. Errors if the transaction is not active.
-    fn resume(store: Arc<RwLock<Box<dyn Store>>>, id: u64) -> Result<Self> {
-        let session = store.read()?;
-        let mode = match session.get(&Key::TxnActive(id).encode())? {
-            Some(v) => deserialize(&v)?,
-            None => return Err(Error::Value(format!("No active transaction {}", id))),
-        };
-        let snapshot = match &mode {
-            Mode::Snapshot { version } => Snapshot::restore(&session, *version)?,
-            _ => Snapshot::restore(&session, id)?,
-        };
-        std::mem::drop(session);
-        Ok(Self { store, id, mode, snapshot })
-    }
-
-    /// Returns the transaction ID.
-    pub fn id(&self) -> u64 {
-        self.id
-    }
     
-
-    /// Returns the transaction mode.
-    pub fn mode(&self) -> Mode {
-        self.mode
-    }
-
-    /// Commits the transaction, by removing the txn from the active set.
-    pub fn commit(self) -> Result<()> {
-        let mut session = self.store.write()?;
-        session.delete(&Key::TxnActive(self.id).encode())?;
-        session.flush()
-    }
-
-    /// Rolls back the transaction, by removing all updated entries.
-    pub fn rollback(self) -> Result<()> {
-        let mut session = self.store.write()?;
-        if self.mode.mutable() {
-            let mut rollback = Vec::new();
-            let mut scan = session.scan(Range::from(
-                Key::TxnUpdate(self.id, vec![].into()).encode()
-                    ..Key::TxnUpdate(self.id + 1, vec![].into()).encode(),
-            ));
-            while let Some((key, _)) = scan.next().transpose()? {
-                match Key::decode(&key)? {
-                    Key::TxnUpdate(_, updated_key) => rollback.push(updated_key.into_owned()),
-                    k => return Err(Error::Internal(format!("Expected TxnUpdate, got {:?}", k))),
-                };
-                rollback.push(key);
-            }
-            std::mem::drop(scan);
-            for key in rollback.into_iter() {
-                session.delete(&key)?;
-            }
-        }
-        session.delete(&Key::TxnActive(self.id).encode())
-    }
-
-    /// Deletes a key.
-    pub fn delete(&mut self, key: &[u8]) -> Result<()> {
-        self.write(key, None)
-    }
-
-    /// Fetches a key.
-    pub fn get(&self, key: &[u8]) -> Result<Option<Vec<u8>>> {
-        let session = self.store.read()?;
-        let mut scan = session
-            .scan(Range::from(
-                Key::Record(key.into(), 0).encode()..=Key::Record(key.into(), self.id).encode(),
-            ))
-            .rev();
-        while let Some((k, v)) = scan.next().transpose()? {
-            match Key::decode(&k)? {
-                Key::Record(_, version) => {
-                    if self.snapshot.is_visible(version) {
-                        return deserialize(&v);
-                    }
-                }
-                k => return Err(Error::Internal(format!("Expected Txn::Record, got {:?}", k))),
-            };
-        }
-        Ok(None)
-    }
-
-    /// Scans a key range.
-    pub fn scan(&self, range: impl RangeBounds<Vec<u8>>) -> Result<super::Scan> {
-        let start = match range.start_bound() {
-            Bound::Excluded(k) => Bound::Excluded(Key::Record(k.into(), std::u64::MAX).encode()),
-            Bound::Included(k) => Bound::Included(Key::Record(k.into(), 0).encode()),
-            Bound::Unbounded => Bound::Included(Key::Record(vec![].into(), 0).encode()),
-        };
-        let end = match range.end_bound() {
-            Bound::Excluded(k) => Bound::Excluded(Key::Record(k.into(), 0).encode()),
-            Bound::Included(k) => Bound::Included(Key::Record(k.into(), std::u64::MAX).encode()),
-            Bound::Unbounded => Bound::Unbounded,
-        };
-        let scan = self.store.read()?.scan(Range::from((start, end)));
-        Ok(Box::new(Scan::new(scan, self.snapshot.clone())))
-    }
-
-    /// Scans keys under a given prefix.
-    pub fn scan_prefix(&self, prefix: &[u8]) -> Result<super::Scan> {
-        if prefix.is_empty() {
-            return Err(Error::Internal("Scan prefix cannot be empty".into()));
-        }
-        let start = prefix.to_vec();
-        let mut end = start.clone();
-        for i in (0..end.len()).rev() {
-            match end[i] {
-                // If all 0xff we could in principle use Range::Unbounded, but it won't happen
-                0xff if i == 0 => return Err(Error::Internal("Invalid prefix scan range".into())),
-                0xff => {
-                    end[i] = 0x00;
-                    continue;
-                }
-                v => {
-                    end[i] = v + 1;
-                    break;
-                }
-            }
-        }
-        self.scan(start..end)
-    }
-
-    /// Sets a key.
-    pub fn set(&mut self, key: &[u8], value: Vec<u8>) -> Result<()> {
-        self.write(key, Some(value))
-    }
-
-    /// Writes a value for a key. None is used for deletion.
-    fn write(&self, key: &[u8], value: Option<Vec<u8>>) -> Result<()> {
-        if !self.mode.mutable() {
-            return Err(Error::ReadOnly);
-        }
-        let mut session = self.store.write()?;
-
-        // Check if the key is dirty, i.e. if it has any uncommitted changes, by scanning for any
-        // versions that aren't visible to us.
-        let min = self.snapshot.invisible.iter().min().cloned().unwrap_or(self.id + 1);
-        let mut scan = session
-            .scan(Range::from(
-                Key::Record(key.into(), min).encode()
-                    ..=Key::Record(key.into(), std::u64::MAX).encode(),
-            ))
-            .rev();
-        while let Some((k, _)) = scan.next().transpose()? {
-            match Key::decode(&k)? {
-                Key::Record(_, version) => {
-                    if !self.snapshot.is_visible(version) {
-                        return Err(Error::Serialization);
-                    }
-                }
-                k => return Err(Error::Internal(format!("Expected Txn::Record, got {:?}", k))),
-            };
-        }
-        std::mem::drop(scan);
-
-        // Write the key and its update record.
-        let key = Key::Record(key.into(), self.id).encode();
-        let update = Key::TxnUpdate(self.id, (&key).into()).encode();
-        session.set(&update, vec![])?;
-        session.set(&key, serialize(&value)?)
-    }
 }
 
 
@@ -309,6 +149,37 @@ struct Snapshot {
     invisible: HashSet<u64>,
 }
 
+
+impl Snapshot {
+   ///获取一个新的快照，并将其持久化为' Key::TxnSnapshot(version) '。
+    fn take(session: &mut RwLockWriteGuard<Box<dyn Store>>, version: u64) -> Results<Self> {
+        let mut snapshot = Self { version, invisible: HashSet::new() };
+        let mut scan =
+            session.scan(Range::from(Key::TxnActive(0).encode()..Key::TxnActive(version).encode()));
+        while let Some((key, _)) = scan.next().transpose().unwrap() {
+            match Key::decode(&key).unwrap() {
+                Key::TxnActive(id) => snapshot.invisible.insert(id),
+                k => return Err(Errors::Internal(format!("Expected TxnActive, got {:?}", k))),
+            };
+        }
+        std::mem::drop(scan);
+        session.set(&Key::TxnSnapshot(version).encode(), serialize(&snapshot.invisible).unwrap());
+        Ok(snapshot)
+    }
+
+   ///从' Key::TxnSnapshot(version) '恢复现有快照，如果没有找到则返回错误。
+    fn restore(session: &RwLockReadGuard<Box<dyn Store>>, version: u64) -> Results<Self> {
+        match session.get(&Key::TxnSnapshot(version).encode()).unwrap() {
+            Some(ref v) => Ok(Self { version, invisible: deserialize(v).unwrap() }),
+            None => Err(Errors::Value(format!("Snapshot not found for version {}", version))),
+        }
+    }
+
+   ///检查给定的版本是否在此快照中可见。
+    fn is_visible(&self, version: u64) -> bool {
+        version <= self.version && self.invisible.get(&version).is_none()
+    }
+}
 
 /// MVCC键。编码保留了键的分组和顺序。我们想用奶牛就用奶牛
 ///编码时取borrow，解码时返回owned。
