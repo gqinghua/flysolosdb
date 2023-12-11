@@ -2,7 +2,10 @@ use std::collections::HashMap;
 
 use sqlparser::ast::{Expr, Query, SetExpr, Statement, Value, Values};
 
-use crate::{error::error::{Result, SQLRiteError}, sql::db::table::{self, Table}};
+use crate::{
+    error::error::{Result, SQLRiteError},
+    sql::db::table::{self, Table},
+};
 
 /// 下面的结构表示已经解析过的INSERT查询
 /// 并分解为“table_name”和“Vec<String>”表示“列”
@@ -14,11 +17,9 @@ pub struct InsertQuery {
     pub rows: Vec<Vec<String>>,
 }
 
-
-
 impl InsertQuery {
-pub fn new(statement: &Statement) -> Result<InsertQuery> {
-    let mut tname: Option<String> = None;
+    pub fn new(statement: &Statement) -> Result<InsertQuery> {
+        let mut tname: Option<String> = None;
         let mut columns: Vec<String> = vec![];
         let mut all_vals: Vec<Vec<String>> = vec![];
 
@@ -27,7 +28,8 @@ pub fn new(statement: &Statement) -> Result<InsertQuery> {
             columns: cols,
             source,
             ..
-        } = statement{
+        } = statement
+        {
             tname = Some(table_name.to_string());
             for c in cols {
                 columns.push(c.to_string());
@@ -63,10 +65,9 @@ pub fn new(statement: &Statement) -> Result<InsertQuery> {
                     }
                     all_vals.push(value_set);
                 }
-                for i in & all_vals {
+                for i in &all_vals {
                     for c in i {
                         println!("数据为 ：{c}");
-
                     }
                 }
                 //持久化操作
@@ -74,15 +75,14 @@ pub fn new(statement: &Statement) -> Result<InsertQuery> {
         }
 
         match tname {
-                        Some(t) => Ok(InsertQuery {
-                            table_name: t,
-                            columns,
-                            rows: all_vals,
-                        }),
-                        None => Err(SQLRiteError::Internal(
-                            "Error parsing insert query".to_string(),
-                        )),
-                    }
-                }
-            }
-            
+            Some(t) => Ok(InsertQuery {
+                table_name: t,
+                columns,
+                rows: all_vals,
+            }),
+            None => Err(SQLRiteError::Internal(
+                "Error parsing insert query".to_string(),
+            )),
+        }
+    }
+}

@@ -2,20 +2,20 @@ use serde::{Deserialize, Serialize};
 use sqlparser::ast::Query;
 use std::cell::RefCell;
 use std::collections::{BTreeMap, HashMap};
-use std::{fmt, fs};
-use std::rc::Rc;
 use std::ops::Bound::{self, Excluded, Included, Unbounded};
+use std::rc::Rc;
+use std::{fmt, fs};
 
 use prettytable::{Cell as PrintCell, Row as PrintRow, Table as PrintTable};
 
-use crate::error::database::Table::{TableEntries, TableResult, TableError};
+use crate::error::database::Table::{TableEntries, TableError, TableResult};
 use crate::error::error::{Result, SQLRiteError};
-use crate::sql::parser::{create::CreateQuery};
-use crate::sql::parser::query::{SelectQuery,Operator,Binary,Expression};
-use crate::sql::regrxs::utils::{get_table_path, get_schema_path};
+use crate::sql::parser::create::CreateQuery;
+use crate::sql::parser::query::{Binary, Expression, Operator, SelectQuery};
+use crate::sql::regrxs::utils::{get_schema_path, get_table_path};
+use serde_json::json;
 use std::result::Result as R;
 use thiserror::Error;
-use serde_json::json;
 
 use super::database::Database;
 //表信息
@@ -33,14 +33,9 @@ pub struct Table {
     pub last_rowid: i64,
     ///列的名称，如果表没有PRIMARY KEY，则为-1
     pub primary_key: String,
-    
-
 }
 
-
-
 impl Table {
-
     // fn write(&self, entries: &TableEntries) -> TableResult<()> {
     //     self.exists_or_err()?;
     //     let table = get_table_path(self);
@@ -72,8 +67,6 @@ impl Table {
 
     //     Ok(serde_json::from_str(&content).unwrap())
     // }
-
-
 
     pub fn new(create_query: CreateQuery) -> Self {
         let table_name = create_query.table_name;
@@ -138,8 +131,8 @@ impl Table {
         self.columns.iter().any(|col| col.column_name == column)
     }
 
-        ///返回' sql::db::table::Column '的不可变引用
-        ///用指定的键作为列名的列。
+    ///返回' sql::db::table::Column '的不可变引用
+    ///用指定的键作为列名的列。
     pub fn get_column(&mut self, column_name: String) -> Result<&Column> {
         if let Some(column) = self
             .columns
@@ -154,10 +147,8 @@ impl Table {
         }
     }
 
-  
-
-        ///返回' sql::db::table::Column '的可变引用
-        ///用指定的键作为列名的列。
+    ///返回' sql::db::table::Column '的可变引用
+    ///用指定的键作为列名的列。
     pub fn get_column_mut<'a>(&mut self, column_name: String) -> Result<&mut Column> {
         for elem in self.columns.iter_mut() {
             if elem.column_name == column_name {
@@ -167,8 +158,8 @@ impl Table {
         Err(SQLRiteError::General(String::from("Column not found.")))
     }
 
-        ///验证插入的列和值是否违反UNIQUE约束
-        ///提醒一下，PRIMARY KEY列自动也是UNIQUE列
+    ///验证插入的列和值是否违反UNIQUE约束
+    ///提醒一下，PRIMARY KEY列自动也是UNIQUE列
     pub fn validate_unique_constraint(
         &mut self,
         cols: &Vec<String>,
@@ -216,20 +207,20 @@ impl Table {
         return Ok(());
     }
 
-        ///在相应的列中插入所有的VALUES，使用ROWID在所有的行上嵌入INDEX
-        ///每个' Table '都会跟踪' last_rowid '，以便于下一个将是什么。
-        ///这种数据结构的一个限制是，我们一次只能有一个写事务，否则
-        ///我们可以在last_rovid .println!
-        ///
-        ///由于我们松散地模仿SQLite，这也是SQLite的一个限制(一次只允许一个写事务)
-        ///所以我们很好。:)
-        ///
+    ///在相应的列中插入所有的VALUES，使用ROWID在所有的行上嵌入INDEX
+    ///每个' Table '都会跟踪' last_rowid '，以便于下一个将是什么。
+    ///这种数据结构的一个限制是，我们一次只能有一个写事务，否则
+    ///我们可以在last_rovid .println!
+    ///
+    ///由于我们松散地模仿SQLite，这也是SQLite的一个限制(一次只允许一个写事务)
+    ///所以我们很好。:)
+    ///
     pub fn insert_row(&mut self, cols: &Vec<String>, values: &Vec<String>) {
         let mut next_rowid = self.last_rowid + i64::from(1);
         // //检查表是否有PRIMARY KEY
         if self.primary_key != "-1" {
-          //检查主键是否在INSERT QUERY列中
-          //如果不是，给它分配next_rowid
+            //检查主键是否在INSERT QUERY列中
+            //如果不是，给它分配next_rowid
             if !cols.iter().any(|col| col == &self.primary_key) {
                 let rows_clone = Rc::clone(&self.rows);
                 let mut row_data = rows_clone.as_ref().borrow_mut();
@@ -314,10 +305,10 @@ impl Table {
             let mut row_data = rows_clone.as_ref().borrow_mut();
             let mut table_col_data = row_data.get_mut(key).unwrap();
 
-           //根据列名获取标题
+            //根据列名获取标题
             let column_headers = self.get_column_mut(key.to_string()).unwrap();
 
-           //获取列的索引，如果列存在
+            //获取列的索引，如果列存在
             let col_index = column_headers.get_mut_index();
 
             match &mut table_col_data {
@@ -327,7 +318,6 @@ impl Table {
                     if let ColumnIndex::Integer(index) = col_index {
                         index.insert(val, next_rowid.clone());
                     }
-
                 }
                 Row::Text(tree) => {
                     tree.insert(next_rowid.clone(), val.to_string());
@@ -367,7 +357,6 @@ impl Table {
     /// ```
     ///
     pub fn print_table_schema(&self) -> Result<usize> {
-
         let mut table = PrintTable::new();
 
         table.add_row(row![
@@ -386,7 +375,7 @@ impl Table {
                 col.not_null.to_string(),
             ]);
         }
-        
+
         let lines = table.printstd();
         Ok(44)
     }
@@ -407,7 +396,6 @@ impl Table {
     ///     +----+---------+------------------------+
 
     pub fn print_table_data(&self) {
-
         let mut print_table = PrintTable::new();
 
         let column_names = self
@@ -452,9 +440,7 @@ impl Table {
         print_table.printstd();
     }
 
-
-    pub fn execute_select_query(&self,sq: &SelectQuery) {
-            
+    pub fn execute_select_query(&self, sq: &SelectQuery) {
         let mut print_table = PrintTable::new();
 
         let column_names = self
@@ -498,8 +484,6 @@ impl Table {
         }
         print_table.printstd();
     }
-
-  
 }
 
 //字段信息
@@ -562,14 +546,12 @@ pub enum ColumnIndex {
     // Integer(BTreeMap<i32, i64>),
     // Text(BTreeMap<String, i64>),
     // None,
-
     Integer(BTreeMap<i32, i64>),
     Text(BTreeMap<String, i64>),
     None,
 }
 
 impl ColumnIndex {
-
     fn get_indexes_from_op<T: Clone>(val: T, op: Binary) -> (Bound<T>, Bound<T>) {
         match op {
             Binary::Eq => (Included(val.clone()), Included(val)),
@@ -581,7 +563,7 @@ impl ColumnIndex {
         }
     }
 
-    fn get_idx_data_by_range(&self, val: &String, op: Binary) ->  R<Vec<usize>, String> {
+    fn get_idx_data_by_range(&self, val: &String, op: Binary) -> R<Vec<usize>, String> {
         let mut indexes: Vec<usize> = vec![];
         match self {
             ColumnIndex::Integer(index) => match val.parse::<i32>() {
@@ -681,5 +663,3 @@ impl Row {
         }
     }
 }
-
-

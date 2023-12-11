@@ -7,11 +7,9 @@ use tabwriter::TabWriter;
 
 use crate::error::database::Table::TableEntries;
 use crate::sql::db::database::DB_DIR;
+use crate::sql::db::table::Table;
 use crate::sql::parser::queryParser::SelectCols;
 use crate::sql::regrxs::regexs::RE_COMMA_SEPARATED_VALUES;
-use crate::sql::db::table::{Table};
-
-
 
 pub fn get_db_path(name: &str) -> PathBuf {
     let base_dir = Path::new(DB_DIR);

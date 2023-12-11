@@ -12,11 +12,11 @@ mod storage;
 use metaCommand::handle_meta_command;
 use repl::{get_command_type, get_config, CommandType};
 
-use sql::db::database::Database;
-use sql::process_command;
-use clap::{ crate_name, crate_version, Command};
+use clap::{crate_name, crate_version, Command};
 use rustyline::error::ReadlineError;
 use rustyline::{Cmd, Editor};
+use sql::db::database::Database;
+use sql::process_command;
 // 测试
 use crate::repl::MyHelper;
 use rustyline::completion::FilenameCompleter;
@@ -44,18 +44,14 @@ fn main() -> rustyline::Result<()> {
     let mut repl = Editor::with_config(config)?;
 
     repl.set_helper(Some(myh));
-
     repl.bind_sequence(KeyEvent::alt('n'), Cmd::HistorySearchForward);
     repl.bind_sequence(KeyEvent::alt('p'), Cmd::HistorySearchBackward);
-
     // 此方法将历史文件加载到内存中
     // 如果它不存在，则创建一个
-    // 待办事项:检查历史文件大小，如果太大，清理它。
     if repl.load_history(".hisData").is_err() {
         println!("No previous history.");
     }
-
-    // 友好的介绍信息的用户
+    // 介绍信息
     println!(
         "{} - {}\n{}{}{}{}",
         crate_name!(),
@@ -71,7 +67,7 @@ fn main() -> rustyline::Result<()> {
     loop {
         let p = format!("sqlrite> ");
         repl.helper_mut().expect("No helper").colored_prompt = format!("\x1b[1;32m{p}\x1b[0m");
-            
+
         let readline = repl.readline(&p);
         match readline {
             Ok(command) => {
@@ -83,14 +79,14 @@ fn main() -> rustyline::Result<()> {
                         //返回一个Result<String的SQL语句，SQLRiteError>
                         let _ = match process_command(&command, &mut db) {
                             Ok(response) => println!("{}", response),
-                            Err(err) => eprintln!("An error occured: {}", err),
+                            Err(err) => eprintln!("An errors occured: {}", err),
                         };
                     }
                     CommandType::MetaCommand(cmd) => {
                         // handle_meta_command解析并执行metcommand
                         let _ = match handle_meta_command(cmd, &mut repl) {
                             Ok(response) => println!("{}", response),
-                            Err(err) => eprintln!("An error occured: {}", err),
+                            Err(err) => eprintln!("An errors occured: {}", err),
                         };
                     }
                 }

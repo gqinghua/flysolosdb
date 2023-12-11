@@ -1,11 +1,11 @@
 use crate::metaCommand::*;
 use crate::sql::*;
 
-use std::borrow::Cow::{self, Borrowed, Owned};
 use rustyline::completion::FilenameCompleter;
 use rustyline::highlight::{Highlighter, MatchingBracketHighlighter};
 use rustyline::hint::HistoryHinter;
 use rustyline::validate::MatchingBracketValidator;
+use std::borrow::Cow::{self, Borrowed, Owned};
 
 use rustyline::{Cmd, CompletionType, Config, EditMode, Editor, KeyEvent};
 use rustyline::{Completer, Helper, Hinter, Validator};
@@ -27,7 +27,6 @@ pub fn get_command_type(command: &String) -> CommandType {
     }
 }
 
-
 #[derive(Helper, Completer, Hinter, Validator)]
 pub struct MyHelper {
     #[rustyline(Completer)]
@@ -39,8 +38,6 @@ pub struct MyHelper {
     pub hinter: HistoryHinter,
     pub colored_prompt: String,
 }
-
-
 
 // 返回具有基本编辑器配置的Config::构建器
 //终端配置文件

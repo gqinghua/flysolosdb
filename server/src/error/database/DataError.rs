@@ -2,7 +2,6 @@ use std::io;
 
 use thiserror::Error;
 
-
 #[derive(Error, Debug)]
 pub enum DatabaseError {
     #[error("Duplicated database")]
@@ -12,6 +11,5 @@ pub enum DatabaseError {
     #[error("Database not found")]
     NotFound(String),
 }
-
 
 type DBResult<T> = Result<T, DatabaseError>;

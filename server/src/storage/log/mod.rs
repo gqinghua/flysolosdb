@@ -1,10 +1,8 @@
 mod hybrid;
 mod memory;
 
-
 pub use hybrid::Hybrid;
 pub use memory::Memory;
-
 
 use crate::error::database::error::Result;
 
@@ -77,6 +75,3 @@ impl Range {
 
 /// Iterator over a log range.
 pub type Scan<'a> = Box<dyn Iterator<Item = Result<Vec<u8>>> + 'a>;
-
-
-

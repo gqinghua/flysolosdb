@@ -1,7 +1,7 @@
 pub mod db;
+pub mod engine;
 pub mod parser;
 pub mod regrxs;
-pub mod engine;
 
 use crate::error::error::{Result, SQLRiteError};
 use crate::sql::db::database::Database;
@@ -201,7 +201,7 @@ pub fn process_command(query: &str, db: &mut Database) -> Result<String> {
                         eprintln!("Cannot execute query the table {} doesn't exists", sq.from)
                     }
                 },
-                Err(error) => eprintln!("{error}"),
+                Err(error) => eprintln!("{errors}"),
             }
             //QUERY已执行的语句。
             message = String::from("QUERY Statement executed.")
@@ -214,7 +214,6 @@ pub fn process_command(query: &str, db: &mut Database) -> Result<String> {
         Statement::CreateDatabase { .. } => {
             let use_query = Database::new("aaa");
             message = String::from("INSERT111 Statement executed.")
-
         }
 
         Statement::Delete { .. } => message = String::from("DELETE Statement executed."),

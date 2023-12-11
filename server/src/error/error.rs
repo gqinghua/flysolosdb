@@ -1,7 +1,7 @@
 use thiserror::Error;
 
 use core::fmt;
-use std::{result, fmt::Display};
+use std::{fmt::Display, result};
 
 use sqlparser::parser::ParserError;
 
@@ -15,23 +15,22 @@ pub type Results<T> = std::result::Result<T, Errors>;
 ///
 #[derive(Error, Debug, PartialEq)]
 pub enum SQLRiteError {
-    #[error("Not Implemented error: {0}")]
+    #[error("Not Implemented errors: {0}")]
     NotImplemented(String),
-    #[error("General error: {0}")]
+    #[error("General errors: {0}")]
     General(String),
-    #[error("Internal error: {0}")]
+    #[error("Internal errors: {0}")]
     Internal(String),
-    #[error("Unknown command error: {0}")]
+    #[error("Unknown command errors: {0}")]
     UnknownCommand(String),
-    #[error("SQL error: {0:?}")]
+    #[error("SQL errors: {0:?}")]
     SqlError(#[from] ParserError),
 }
 
-/// Returns SQLRiteError::General error from String
+/// Returns SQLRiteError::General errors from String
 pub fn sqlrite_error(message: &str) -> SQLRiteError {
     SQLRiteError::General(message.to_owned())
 }
-
 
 pub enum Errors {
     Abort,
@@ -42,8 +41,6 @@ pub enum Errors {
     Serialization,
     Value(String),
 }
-
-
 
 impl Display for Errors {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> fmt::Result {
@@ -134,5 +131,4 @@ impl<T> From<std::sync::PoisonError<T>> for Errors {
     fn from(err: std::sync::PoisonError<T>) -> Self {
         Errors::Internal(err.to_string())
     }
-
 }

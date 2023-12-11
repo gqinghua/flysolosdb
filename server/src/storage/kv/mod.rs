@@ -1,18 +1,14 @@
-
 pub mod mvcc;
 // pub mod encoding;
 
-
-
-use  crate::error::error::Result;
+use crate::error::error::Result;
 
 use std::fmt::Display;
 use std::ops::{Bound, RangeBounds};
-pub use mvcc::MVCC;
+// pub use mvcc::MVCC;
 
 /////键/值范围上的迭代器。
 pub type Scan = Box<dyn DoubleEndedIterator<Item = Result<(Vec<u8>, Vec<u8>)>> + Send>;
-
 
 ///键/值存储
 pub trait Store: Display + Send + Sync {
@@ -25,13 +21,12 @@ pub trait Store: Display + Send + Sync {
     ///获取键的值(如果存在)。
     fn get(&self, key: &[u8]) -> Result<Option<Vec<u8>>>;
 
-   ///在键/值对的有序范围内迭代。
+    ///在键/值对的有序范围内迭代。
     fn scan(&self, range: Range) -> Scan;
 
-   ///为一个键设置一个值，替换现有的值。
+    ///为一个键设置一个值，替换现有的值。
     fn set(&mut self, key: &[u8], value: Vec<u8>) -> Result<()>;
 }
-
 
 //迭代器
 pub struct Range {

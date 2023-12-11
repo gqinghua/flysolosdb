@@ -107,5 +107,4 @@ impl<T> From<std::sync::PoisonError<T>> for Error {
     fn from(err: std::sync::PoisonError<T>) -> Self {
         Error::Internal(err.to_string())
     }
-
 }

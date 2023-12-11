@@ -123,4 +123,3 @@ impl DataType {
         res.to_string()
     }
 }
-

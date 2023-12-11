@@ -1,11 +1,17 @@
 use regex::Regex;
 use thiserror::Error;
 
-use crate::sql::regrxs::{*, regexs::{RE_SHOW_QUERY, RE_DB, RE_CREATE_TABLE, RE_TABLE_ENTRIES, RE_TABLE, RE_DROP_COL, RE_ALTER_COL, RE_ADD_COL, RE_SELECT, RE_INSERT, RE_INSERT_VALUES_VALUES, RE_DELETE_FROM_TABLE, RE_KEY_VALUE}};
+use crate::sql::regrxs::{
+    regexs::{
+        RE_ADD_COL, RE_ALTER_COL, RE_CREATE_TABLE, RE_DB, RE_DELETE_FROM_TABLE, RE_DROP_COL,
+        RE_INSERT, RE_INSERT_VALUES_VALUES, RE_KEY_VALUE, RE_SELECT, RE_SHOW_QUERY, RE_TABLE,
+        RE_TABLE_ENTRIES,
+    },
+    *,
+};
 use types::{DataType, DataTypesErr};
 use utils::{get_cols, get_comma_separated_values};
 pub type ColName = String;
-
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum DatabaseAction {
@@ -77,7 +83,7 @@ pub enum QueryParserError {
     InvalidCondition(String),
     #[error("Invalid Operator")]
     InvalidOperator(String),
-    #[error("Data type error")]
+    #[error("Data type errors")]
     DataTypeErr(#[from] DataTypesErr),
 }
 
@@ -278,4 +284,3 @@ impl Condition {
         }
     }
 }
-

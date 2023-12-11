@@ -59,7 +59,6 @@ impl CreateQuery {
                         )));
                     }
 
-
                     //解析每个列的数据类型
                     //目前只接受基本数据类型
                     let datatype = match &col.data_type {
@@ -92,7 +91,7 @@ impl CreateQuery {
                                 if datatype != "Real" && datatype != "Bool" {
                                     is_pk = is_primary;
                                     if is_primary {
-                                        // Checks if table being created already has a PRIMARY KEY, if so, returns an error
+                                        // Checks if table being created already has a PRIMARY KEY, if so, returns an errors
                                         if parsed_columns.iter().any(|col| col.is_pk == true) {
                                             return Err(SQLRiteError::Internal(format!(
                                                 "Table '{}' has more than one primary key",
@@ -119,7 +118,6 @@ impl CreateQuery {
                         is_unique,
                     });
                 }
-                
 
                 // TODO:处理约束;
                 //默认值等。

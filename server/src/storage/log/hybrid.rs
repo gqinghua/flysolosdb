@@ -48,8 +48,11 @@ impl Hybrid {
     pub fn new(dir: &Path, sync: bool) -> Result<Self> {
         create_dir_all(dir)?;
 
-        let file =
-            OpenOptions::new().read(true).write(true).create(true).open(dir.join("raft-log"))?;
+        let file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .open(dir.join("raft-log"))?;
 
         let metadata_file = OpenOptions::new()
             .read(true)
@@ -112,7 +115,10 @@ impl Store for Hybrid {
 
     fn commit(&mut self, index: u64) -> Result<()> {
         if index > self.len() {
-            return Err(Error::Internal(format!("Cannot commit non-existant index {}", index)));
+            return Err(Error::Internal(format!(
+                "Cannot commit non-existant index {}",
+                index
+            )));
         }
         if index < self.index.len() as u64 {
             return Err(Error::Internal(format!(
@@ -163,7 +169,10 @@ impl Store for Hybrid {
                 file.read_exact(&mut entry)?;
                 Ok(Some(entry))
             }
-            i => Ok(self.uncommitted.get(i as usize - self.index.len() - 1).cloned()),
+            i => Ok(self
+                .uncommitted
+                .get(i as usize - self.index.len() - 1)
+                .cloned()),
         }
     }
 
@@ -195,14 +204,15 @@ impl Store for Hybrid {
             let mut file = self.file.lock().unwrap();
             file.seek(SeekFrom::Start(*offset - 4)).unwrap(); // seek to length prefix
             let mut bufreader = BufReader::new(MutexReader(file)); // FIXME Avoid MutexReader
-            scan =
-                Box::new(scan.chain(self.index.range(start..=end).map(move |(_, (_, size))| {
+            scan = Box::new(scan.chain(self.index.range(start..=end).map(
+                move |(_, (_, size))| {
                     let mut sizebuf = vec![0; 4];
                     bufreader.read_exact(&mut sizebuf)?;
                     let mut entry = vec![0; *size as usize];
                     bufreader.read_exact(&mut entry)?;
                     Ok(entry)
-                })));
+                },
+            )));
         }
 
         // Scan uncommitted entries in memory
@@ -223,7 +233,11 @@ impl Store for Hybrid {
     }
 
     fn size(&self) -> u64 {
-        self.index.iter().next_back().map(|(_, (pos, size))| *pos + *size as u64).unwrap_or(0)
+        self.index
+            .iter()
+            .next_back()
+            .map(|(_, (pos, size))| *pos + *size as u64)
+            .unwrap_or(0)
     }
 
     fn truncate(&mut self, index: u64) -> Result<u64> {
@@ -268,4 +282,3 @@ impl<'a> Read for MutexReader<'a> {
         self.0.read(buf)
     }
 }
-

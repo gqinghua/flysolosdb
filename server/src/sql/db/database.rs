@@ -68,12 +68,12 @@ impl Database {
         }
     }
     //指定表
-    pub fn use_db(statement: &Statement) ->  Result<()> {
+    pub fn use_db(statement: &Statement) -> Result<()> {
         match statement {
             Statement::Use { db_name } => {
                 let ident = db_name;
                 let NameValue = &ident.value;
-                print!("aaa111  {}",NameValue);
+                print!("aaa111  {}", NameValue);
                 let base_dir = std::path::Path::new(DB_DIR);
                 Database::exists_or_err(&NameValue)?;
                 let curr_db = base_dir.join(CURR_DB);

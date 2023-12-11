@@ -14,7 +14,11 @@ pub struct Memory {
 impl Memory {
     /// Creates a new in-memory log.
     pub fn new() -> Self {
-        Self { log: Vec::new(), committed: 0, metadata: HashMap::new() }
+        Self {
+            log: Vec::new(),
+            committed: 0,
+            metadata: HashMap::new(),
+        }
     }
 }
 
@@ -32,7 +36,10 @@ impl Store for Memory {
 
     fn commit(&mut self, index: u64) -> Result<()> {
         if index > self.len() {
-            return Err(Error::Internal(format!("Cannot commit non-existant index {}", index)));
+            return Err(Error::Internal(format!(
+                "Cannot commit non-existant index {}",
+                index
+            )));
         }
         if index < self.committed {
             return Err(Error::Internal(format!(
@@ -104,4 +111,3 @@ impl Store for Memory {
         Ok(())
     }
 }
-

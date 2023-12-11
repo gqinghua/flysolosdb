@@ -4,9 +4,6 @@ use thiserror::Error;
 
 use crate::sql::regrxs::types::DataTypesErr;
 
-
-
-
 pub type TableEntries = Vec<HashMap<String, String>>;
 
 pub struct Table<'a> {
@@ -30,11 +27,10 @@ pub enum TableError {
     ColTypeNotFound(String),
     #[error("Number of columns doesn't match number of vlaues")]
     NumberMismatch(String),
-    #[error("Types error")]
+    #[error("Types errors")]
     TypeErr(#[from] DataTypesErr),
     #[error("Column already exist")]
     ColAlreadyExist(String),
-    
 }
 
-pub  type TableResult<T> = Result<T, TableError>;
+pub type TableResult<T> = Result<T, TableError>;
