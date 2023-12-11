@@ -300,7 +300,7 @@ impl fmt::Display for Whitespace {
     }
 }
 
-/// Tokenizer error
+/// Tokenizer errors
 #[derive(Debug, PartialEq, Eq)]
 pub struct TokenizerError {
     pub message: String,

@@ -88,7 +88,7 @@ fn parse_table_identifiers() {
         vec![Ident::with_quote('`', "GROUP"), Ident::new("dataField")],
     );
 
-    // TODO: this should be error
+    // TODO: this should be errors
     // test_table_ident_err("GROUP.dataField");
 
     test_table_ident("abc5.GROUP", vec![Ident::new("abc5"), Ident::new("GROUP")]);

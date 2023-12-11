@@ -92,7 +92,7 @@ impl fmt::Display for ParserError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "sql parser error: {}",
+            "sql parser errors: {}",
             match self {
                 ParserError::TokenizerError(s) => s,
                 ParserError::ParserError(s) => s,
@@ -429,7 +429,7 @@ impl<'a> Parser<'a> {
         //
         //      INTERVAL '7' DAY
         //
-        // Note also that naively `SELECT date` looks like a syntax error because the `date` type
+        // Note also that naively `SELECT date` looks like a syntax errors because the `date` type
         // name is not followed by a string literal, but in fact in PostgreSQL it is a valid
         // expression that should parse as the column name "date".
         return_ok_if_some!(self.maybe_parse(|parser| {
@@ -1215,7 +1215,7 @@ impl<'a> Parser<'a> {
     /// Parses fulltext expressions [(1)]
     ///
     /// # Errors
-    /// This method will raise an error if the column list is empty or with invalid identifiers,
+    /// This method will raise an errors if the column list is empty or with invalid identifiers,
     /// the match expression is not a literal string, or if the search modifier is not valid.
     ///
     /// [(1)]: Expr::MatchAgainst
@@ -5113,9 +5113,9 @@ impl<'a> Parser<'a> {
             return_ok_if_some!(
                 self.maybe_parse(|parser| parser.parse_derived_table_factor(NotLateral))
             );
-            // A parsing error from `parse_derived_table_factor` indicates that the '(' we've
+            // A parsing errors from `parse_derived_table_factor` indicates that the '(' we've
             // recently consumed does not start a derived table (cases 1, 2, or 4).
-            // `maybe_parse` will ignore such an error and rewind to be after the opening '('.
+            // `maybe_parse` will ignore such an errors and rewind to be after the opening '('.
 
             // Inside the parentheses we expect to find an (A) table factor
             // followed by some joins or (B) another level of nesting.

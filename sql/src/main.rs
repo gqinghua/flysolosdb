@@ -3,7 +3,17 @@ use std::path::Path;
 
 use sqlparser::dialect::GenericDialect;
 use sqlparser::parser::Parser;
+pub mod errors;
+pub mod plan;
 
+pub mod execution;
+pub mod types;
+
+pub mod schema;
+
+pub mod parser;
+
+pub mod engine;
 pub const DB_DIR: &str = "./data";
 pub const CURR_DB: &str = "curr_db";
 fn main() {
@@ -28,5 +38,4 @@ fn main() {
     let base_dir = Path::new(DB_DIR);
     let db_dir = base_dir.join(name);
     fs::create_dir_all(db_dir).unwrap();
-    
 }

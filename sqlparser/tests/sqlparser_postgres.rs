@@ -1799,7 +1799,7 @@ fn parse_escaped_literal_string() {
             .parse_sql_statements(sql)
             .unwrap_err()
             .to_string(),
-        "sql parser error: Unterminated encoded string literal at Line: 1, Column 8"
+        "sql parser errors: Unterminated encoded string literal at Line: 1, Column 8"
     );
 }
 

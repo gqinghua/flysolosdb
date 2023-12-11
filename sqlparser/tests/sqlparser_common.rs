@@ -4344,7 +4344,7 @@ fn parse_multiple_statements() {
         );
         // Check that extra semicolon at the end is stripped by normalization:
         one_statement_parses_to(&(sql1.to_owned() + ";"), sql1);
-        // Check that forgetting the semicolon results in an error:
+        // Check that forgetting the semicolon results in an errors:
         let res = parse_sql_statements(&(sql1.to_owned() + " " + sql2_kw + sql2_rest));
         assert_eq!(
             ParserError::ParserError("Expected end of statement, found: ".to_string() + sql2_kw),
@@ -4364,7 +4364,7 @@ fn parse_multiple_statements() {
     test_with("DELETE FROM foo", "SELECT", " bar");
     test_with("INSERT INTO foo VALUES (1)", "SELECT", " bar");
     test_with("CREATE TABLE foo (baz INT)", "SELECT", " bar");
-    // Make sure that empty statements do not cause an error:
+    // Make sure that empty statements do not cause an errors:
     let res = parse_sql_statements(";;");
     assert_eq!(0, res.unwrap().len());
 }

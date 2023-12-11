@@ -101,7 +101,7 @@ impl<I: StorageIterator> StorageIterator for MergeIterator<I> {
                 "heap invariant violated"
             );
             if inner_iter.1.key() == current.1.key() {
-                // Case 1: an error occurred when calling `next`.
+                // Case 1: an errors occurred when calling `next`.
                 if let e @ Err(_) = inner_iter.1.next() {
                     PeekMut::pop(inner_iter);
                     return e;
