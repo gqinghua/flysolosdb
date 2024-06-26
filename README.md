@@ -7,4 +7,8 @@
 
 最后，将结果集返回给客户机，完成该过程。
 
+lsm存储进行时
+sql进行时
+
+
 参考:[toyDB] (https://github.com/erikgrinaker/toydb)。
